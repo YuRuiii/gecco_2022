@@ -2,8 +2,9 @@ import networkx as nx
 import numpy as np
 import argparse
 from graph import Graph
-from node import Node
+from genotype import Genotype
 from evaluation import Evaluation
+from population import Population
 
 
 def get_args():
@@ -23,19 +24,27 @@ def get_args():
 def main(args=get_args()):
     print(args)
     g = Graph()
+    geno = Genotype()
+    popu = Population(5)
+    eval = Evaluation()
+    
+    # get graph
     graph, n_nodes, n_edges = g.graph_generator(args.graph_type, args.n_d, args.n_nodes, args.seed_g, args.gset_id)
     np.random.seed(args.seed)
-    node = Node()
-    x = node.initialization(n_nodes)
-    eval = Evaluation()
-    best_fitness = eval.get_fitness(graph, x, n_edges)
+    
+    # init population
+    x = geno.initialization(n_nodes)
+    popu.population.append((x, eval.get_fitness(graph, x, n_edges)))
     for i in range(args.T):
-        tmp = node.bit_wise_mutation(x)
-        tmp_fitness = eval.get_fitness(graph, tmp, n_edges)
-        if tmp_fitness > best_fitness:
-            x, best_fitness = tmp, tmp_fitness
-            print(i, best_fitness)
-
+        new_population = []
+        for g in popu.population:
+            tmp = geno.bit_wise_mutation(g[0])
+            tmp_fitness = eval.get_fitness(graph, tmp, n_edges)
+            new_population.append((tmp, tmp_fitness))
+        popu.population += new_population
+        best_fitness = popu.population[0][1]
+        popu.update()
+        print(i, best_fitness, [popu.population[i][1] for i in range(len(popu.population))])
 
 if __name__ == '__main__':
     main()
