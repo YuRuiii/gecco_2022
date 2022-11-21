@@ -16,7 +16,7 @@ class Population:
     def iterate(self):
         new_plist = []
         for g in self.plist:
-            tmp = self.geno.bit_wise_mutate(g[0])
+            tmp = self.geno.one_bit_mutate(g[0])
             tmp_fitness = self.eval.get_fitness(self.graph, tmp, self.n_edges)
             new_plist.append((tmp, tmp_fitness))
         self.plist += new_plist
