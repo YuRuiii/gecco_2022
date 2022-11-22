@@ -14,7 +14,7 @@ class Population:
         self.n_nodes = n_nodes
         self.n_edges = n_edges
         self.plist = []
-        for i in range(size):
+        for _ in range(size):
             x = self.geno.initialize(self.n_nodes)
             self.plist.append(tuple(np.append(x, self.eval.get_fitness(self.graph, x, self.n_edges))))
         # print(self.plist)
