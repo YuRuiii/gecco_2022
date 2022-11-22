@@ -22,7 +22,13 @@ class Genotype:
     
     def one_point_xover(self, x1, x2):
         rand_idx = random.randint(0, x1.size-1)
-        new_x = np.concatenate((x1[:rand_idx], x2[rand_idx:]), axis=None)
-        return new_x
+        new_x1 = np.concatenate((x1[:rand_idx], x2[rand_idx:]), axis=None)
+        new_x2 = np.concatenate((x2[:rand_idx], x1[rand_idx:]), axis=None)
+        return new_x1, new_x2
     
+    def mutate(self, x, alpha=0.01):
+        return self.bit_wise_mutate(x, alpha)
+    
+    def recombine(self, x1, x2):
+        return self.one_point_xover(x1, x2)
     
