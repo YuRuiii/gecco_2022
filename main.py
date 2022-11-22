@@ -10,7 +10,7 @@ from population import Population
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--graph-type', type=str, help='graph type', default='regular')
-    parser.add_argument('--n-nodes', type=int, help='the number of nodes', default=500)
+    parser.add_argument('--n-nodes', type=int, help='the number of nodes', default=12)
     parser.add_argument('--n-d', type=int, help='the number of degrees for each node', default=10)
     parser.add_argument('--T', type=int, help='the number of fitness evaluations', default=10000)
     parser.add_argument('--seed-g', type=int, help='the seed of generating regular graph', default=1)
@@ -37,6 +37,7 @@ def main(args=get_args()):
             _, tmp_fitness = popu.iterate()
             file.write('%s %s\n'%(str(i), str(tmp_fitness)))
             print(i, tmp_fitness)
+            assert i <= 20
             # if tmp_fitness > best_fitness:
             #     best_fitness = tmp_fitness
             #     print(i, best_fitness)

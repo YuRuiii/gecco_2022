@@ -23,10 +23,16 @@ class Population:
  
     # parent selection: fitness proportional selection, with windowing
     def FPS(self):
-        min_fitness = min([x[-1] for x in self.plist]) + 1e-3
+        # print("plist:", self.plist)
+        min_fitness = min([x[-1] for x in self.plist])
         normalized_plist = [(x[:-1], x[-1] - min_fitness) for x in self.plist]
         sum_fitness = sum(f for _, f in normalized_plist)
-        prob_plist = [(normalized_plist[i][0], normalized_plist[i][1] / sum_fitness) for i in range(len(normalized_plist))]
+        if sum_fitness == 0:
+            print("sum_fitness == 0")
+            # print(1 / len(normalized_plist))
+            prob_plist = [(normalized_plist[i][0], 1 / len(normalized_plist)) for i in range(len(normalized_plist))]
+        else:
+            prob_plist = [(normalized_plist[i][0], normalized_plist[i][1] / sum_fitness) for i in range(len(normalized_plist))]
         return prob_plist
     
     
@@ -53,8 +59,13 @@ class Population:
             
             
     def get_parent(self):
+        return self.plist
         prob_plist = self.get_prob_list()
+        # return [prob_plist[i][0] for i in range(len(prob_plist))]
+        # print("prob_list:", prob_plist)
         mating_pool = self.get_mating_pool(prob_plist)
+        # print("mating_pool:", mating_pool)
+        # assert 0
         return mating_pool
     
     
@@ -63,37 +74,22 @@ class Population:
         offspring = []
         
         # recombination
-        for i in range(len(mating_pool) // 2):
-            child1, child2 = self.geno.recombine(mating_pool[2*i], mating_pool[2*i+1])
-            for c in child1, child2:
-                c = list(c)
-                c.append(self.eval.get_fitness(self.graph, child2, self.n_edges))
-                c = tuple(c)
-                offspring.append(c)
+        # for i in range(len(mating_pool) // 2):
+        #     child1, child2 = self.geno.recombine(mating_pool[2*i], mating_pool[2*i+1])
+        #     for c in child1, child2:
+        #         c = list(c)
+        #         c.append(self.eval.get_fitness(self.graph, child2, self.n_edges))
+        #         c = tuple(c)
+        #         offspring.append(c)
 
-            
-            # print(child1 + [0.222])
-            
-            # print(child1, child2, np.append(child1, self.eval.get_fitness(self.graph, child1, self.n_edges)))
-            
-            
-            
-            
-            # child = list(child1)
-            # child.append(self.eval.get_fitness(self.graph, child2, self.n_edges))
-            # print(child)
-            # assert 0
-            # offspring.append(tuple(list(child1).append(self.eval.get_fitness(self.graph, child2, self.n_edges))))
-            # offspring.append(tuple(np.append(child2, self.eval.get_fitness(self.graph, child2, self.n_edges))))
-            # offspring.append(np.append(child1, self.eval.get_fitness(self.graph, child1, self.n_edges)))
-            # offspring.append(np.append(child2, self.eval.get_fitness(self.graph, child2, self.n_edges)))
-            
         # mutation
         for node in mating_pool:
             c = self.geno.mutate(node)
             c = list(c)
-            c.append(self.eval.get_fitness(self.graph, child2, self.n_edges))
-            c = tuple(c)
+            c[-1] = self.eval.get_fitness(self.graph, c[:-1], self.n_edges)
+            # c.append(self.eval.get_fitness(self.graph, c, self.n_edges))
+            # c = tuple(c)
+            print(c, node, len(c), len(node))
             offspring.append(c)
         return offspring
     
