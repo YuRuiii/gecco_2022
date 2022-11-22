@@ -8,22 +8,28 @@ class Population:
         self.max_size = size
         self.max_mating_pool_size = size
         self.recombination_time = size / 2
-        self.plist = []
         self.geno = Genotype()
         self.eval = Evaluation()
         self.graph = graph
+        self.n_nodes = n_nodes
         self.n_edges = n_edges
-        for _ in range(size):
-            x = self.geno.initialize(n_nodes)
-            self.plist.append((x, self.eval.get_fitness(graph, x, n_edges)))
+        self.plist = np.zeros((self.max_size, self.n_nodes + 1)).astype(object)
+        self.plist[:, :-1] = self.plist[:, :-1].astype(int)
+        self.plist[:, -1] = self.plist[:, -1].astype(float)
+        for i in range(size):
+            x = self.geno.initialize(self.n_nodes)
+            self.plist[i, :-1] = x
+            self.plist[i, -1] = self.eval.get_fitness(self.graph, x, self.n_edges)
+        # print(self.plist)
+        # assert 0
  
  
     # parent selection: fitness proportional selection, with windowing
     def FPS(self):
-        min_fitness = min(self.plist, key = lambda t: t[1])[1] - 1e-2
-        normalized_plist = [(self.plist[i][0], self.plist[i][1]-min_fitness) for i in range(len(self.plist))]
+        min_fitness = min([x[-1] for x in self.plist]) + 1e-3
+        normalized_plist = [(x[:-1], x[-1] - min_fitness) for x in self.plist]
         sum_fitness = sum(f for _, f in normalized_plist)
-        prob_plist = [(self.plist[i][0], normalized_plist[i][1] / sum_fitness) for i in range(len(self.plist))]
+        prob_plist = [(normalized_plist[i][0], normalized_plist[i][1] / sum_fitness) for i in range(len(normalized_plist))]
         return prob_plist
     
     
@@ -62,27 +68,47 @@ class Population:
         # recombination
         for i in range(len(mating_pool) // 2):
             child1, child2 = self.geno.recombine(mating_pool[2*i], mating_pool[2*i+1])
-            offspring.append(child1)
-            offspring.append(child2)
+            offspring.append(np.append(child1, self.eval.get_fitness(self.graph, child1, self.n_edges)))
+            offspring.append(np.append(child2, self.eval.get_fitness(self.graph, child2, self.n_edges)))
             
         # mutation
         for node in mating_pool:
             child = self.geno.mutate(node)
-            offspring.append(child)
-        
-        off_plist = [(offspring[i], self.eval.get_fitness(self.graph, offspring[i], self.n_edges))]
-        return off_plist
+            offspring.append(np.append(child, self.eval.get_fitness(self.graph, child, self.n_edges)))
+        return offspring
     
         
     def iterate(self):
         parent = self.get_parent()
         offspring = self.get_offspring(parent)
-        self.plist += offspring
-        self.survivor_selection()
-        return self.plist[0][0], self.plist[0][1]
+        self.survivor_selection(offspring)
         
-    def survivor_selection(self):
-        self.plist.sort(key=lambda tup: tup[1], reverse=True)
-        self.plist = self.plist[:self.max_size]
+        for ele in self.plist:
+            assert len(ele) == self.n_nodes + 1
+        return self.plist, self.plist[-1][-1]
+        
+    def survivor_selection(self, offspring):
+        # new_plist = np.unique(self.plist, axis=0)
+        new_plist = np.append(self.plist, offspring, axis=0)
+        new_plist[:, :-1] = new_plist[:, :-1].astype(int)
+        new_plist[:, -1] = new_plist[:, -1].astype(float)
+        print(new_plist)
+        # print([type(ele) for ele in new_plist[0]])
+        # new_plist = np.unique(new_plist, axis=0)
+        # new_plist = [list(np.unique(x)) for x in new_plist]
+        new_plist = set([tuple(x) for x in new_plist])
+        
+        print(new_plist)
+        assert 0
+        # new_plist = self.plist + offspring
+        # print(new_plist)
+        new_plist = new_plist[new_plist[:, -1].argsort()]
+        # new_plist = sorted(new_plist, axis=0)
+        # print(new_plist)
+        # assert 0
+        # print([ele[-1] for ele in new_plist])
+        # new_plist.sort(key=lambda x: x[-1], reverse=True)
+        self.plist = new_plist[-self.max_size:]
+        print(self.plist)
         
     
