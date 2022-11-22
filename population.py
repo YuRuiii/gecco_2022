@@ -13,13 +13,10 @@ class Population:
         self.graph = graph
         self.n_nodes = n_nodes
         self.n_edges = n_edges
-        self.plist = np.zeros((self.max_size, self.n_nodes + 1)).astype(object)
-        self.plist[:, :-1] = self.plist[:, :-1].astype(int)
-        self.plist[:, -1] = self.plist[:, -1].astype(float)
+        self.plist = []
         for i in range(size):
             x = self.geno.initialize(self.n_nodes)
-            self.plist[i, :-1] = x
-            self.plist[i, -1] = self.eval.get_fitness(self.graph, x, self.n_edges)
+            self.plist.append(tuple(np.append(x, self.eval.get_fitness(self.graph, x, self.n_edges))))
         # print(self.plist)
         # assert 0
  
@@ -68,13 +65,36 @@ class Population:
         # recombination
         for i in range(len(mating_pool) // 2):
             child1, child2 = self.geno.recombine(mating_pool[2*i], mating_pool[2*i+1])
-            offspring.append(np.append(child1, self.eval.get_fitness(self.graph, child1, self.n_edges)))
-            offspring.append(np.append(child2, self.eval.get_fitness(self.graph, child2, self.n_edges)))
+            for c in child1, child2:
+                c = list(c)
+                c.append(self.eval.get_fitness(self.graph, child2, self.n_edges))
+                c = tuple(c)
+                offspring.append(c)
+
+            
+            # print(child1 + [0.222])
+            
+            # print(child1, child2, np.append(child1, self.eval.get_fitness(self.graph, child1, self.n_edges)))
+            
+            
+            
+            
+            # child = list(child1)
+            # child.append(self.eval.get_fitness(self.graph, child2, self.n_edges))
+            # print(child)
+            # assert 0
+            # offspring.append(tuple(list(child1).append(self.eval.get_fitness(self.graph, child2, self.n_edges))))
+            # offspring.append(tuple(np.append(child2, self.eval.get_fitness(self.graph, child2, self.n_edges))))
+            # offspring.append(np.append(child1, self.eval.get_fitness(self.graph, child1, self.n_edges)))
+            # offspring.append(np.append(child2, self.eval.get_fitness(self.graph, child2, self.n_edges)))
             
         # mutation
         for node in mating_pool:
-            child = self.geno.mutate(node)
-            offspring.append(np.append(child, self.eval.get_fitness(self.graph, child, self.n_edges)))
+            c = self.geno.mutate(node)
+            c = list(c)
+            c.append(self.eval.get_fitness(self.graph, child2, self.n_edges))
+            c = tuple(c)
+            offspring.append(c)
         return offspring
     
         
@@ -88,18 +108,20 @@ class Population:
         return self.plist, self.plist[-1][-1]
         
     def survivor_selection(self, offspring):
+        # print(offspring)
+        # assert 0
         # new_plist = np.unique(self.plist, axis=0)
         new_plist = np.append(self.plist, offspring, axis=0)
-        new_plist[:, :-1] = new_plist[:, :-1].astype(int)
-        new_plist[:, -1] = new_plist[:, -1].astype(float)
-        print(new_plist)
+        # new_plist[:, :-1] = new_plist[:, :-1].astype(int)
+        # new_plist[:, -1] = new_plist[:, -1].astype(float)
+        # print(new_plist)
         # print([type(ele) for ele in new_plist[0]])
-        # new_plist = np.unique(new_plist, axis=0)
+        new_plist = np.unique(new_plist, axis=0)
         # new_plist = [list(np.unique(x)) for x in new_plist]
-        new_plist = set([tuple(x) for x in new_plist])
+        # new_plist = set([tuple(x) for x in new_plist])
         
-        print(new_plist)
-        assert 0
+        # print(new_plist)
+        # assert 0
         # new_plist = self.plist + offspring
         # print(new_plist)
         new_plist = new_plist[new_plist[:, -1].argsort()]
@@ -109,6 +131,6 @@ class Population:
         # print([ele[-1] for ele in new_plist])
         # new_plist.sort(key=lambda x: x[-1], reverse=True)
         self.plist = new_plist[-self.max_size:]
-        print(self.plist)
+        # print(self.plist)
         
     
