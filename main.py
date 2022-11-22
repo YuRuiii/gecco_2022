@@ -31,11 +31,17 @@ def main(args=get_args()):
     popu = Population(graph, n_nodes, n_edges, args.population_size)
     print("graph, node num =", n_nodes, "edge num =", n_edges)
     print("start training...")
-    with open('result.txt', 'w') as file:
+    with open('fitness.txt', 'w') as file1, open('popu_info.txt', 'w') as file2:
         for i in range(1, args.T):
             _, tmp_fitness = popu.iterate()
-            file.write('%s %s\n'%(str(i), str(tmp_fitness)))
+            file1.write('%s %s\n'%(str(i), str(tmp_fitness)))
             print(i, tmp_fitness)
+            if i == 100: # save population
+                file2.write('%s '%(str(i)))
+                for ele in popu.plist:
+                    file2.write('%s '%(str(ele)))
+                file2.write('\n')
+                
             
 if __name__ == '__main__':
     main()
