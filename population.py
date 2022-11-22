@@ -13,16 +13,16 @@ class Population:
         self.eval = Evaluation()
         self.graph = graph
         self.n_edges = n_edges
-        for _ in range(100):
+        for _ in range(size):
             x = self.geno.initialize(n_nodes)
             self.plist.append((x, self.eval.get_fitness(graph, x, n_edges)))
  
  
     # parent selection: fitness proportional selection, with windowing
     def FPS(self):
-        min_fitness = min(self.plist, key = lambda t: t[1])
+        min_fitness = min(self.plist, key = lambda t: t[1])[1] - 1e-2
         normalized_plist = [(self.plist[i][0], self.plist[i][1]-min_fitness) for i in range(len(self.plist))]
-        sum_fitness = sum(normalized_plist, key = lambda t: t[1])
+        sum_fitness = sum(f for _, f in normalized_plist)
         prob_plist = [(self.plist[i][0], normalized_plist[i][1] / sum_fitness) for i in range(len(self.plist))]
         return prob_plist
     
@@ -30,19 +30,20 @@ class Population:
     # implementation of sampling
     def stochastic_universal_sampling(self, prob_plist):
         mating_pool = []
-        i = 0
         r = random.uniform(0, 1 / self.max_mating_pool_size)
-        while len(mating_pool) <= self.max_mating_pool_size:
-            while r <= prob_plist[i][1]:
+        a = 0
+        for i in range(len(prob_plist)):
+            a += prob_plist[i][1]
+            while r <= a:
+                # print(i, end="")
                 mating_pool.append(prob_plist[i][0])
                 r += 1 / self.max_mating_pool_size
-            i += 1
+        # print("")
         return mating_pool
     
     
     def get_prob_list(self):
         return self.FPS()
-    
     
     def get_mating_pool(self, prob_plist):
         return self.stochastic_universal_sampling(prob_plist)
@@ -80,7 +81,7 @@ class Population:
         self.survivor_selection()
         return self.plist[0][0], self.plist[0][1]
         
-    def update(self):
+    def survivor_selection(self):
         self.plist.sort(key=lambda tup: tup[1], reverse=True)
         self.plist = self.plist[:self.max_size]
         

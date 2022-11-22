@@ -4,14 +4,11 @@ import argparse
 
 
 def generate_regular_graph(args):
-    # 这里简单以正则图为例, 鼓励同学们尝试在其他类型的图(具体可查看如下的nx文档)上测试算法性能
-    # nx文档 https://networkx.org/documentation/stable/reference/generators.html
     graph = nx.random_graphs.random_regular_graph(d=args.n_d, n=args.n_nodes, seed=args.seed_g)
     return graph, len(graph.nodes), len(graph.edges)
 
 
 def generate_gset_graph(args):
-    # 这里提供了比较流行的图集合: Gset, 用于进行分割
     dir = './Gset/'
     fname = dir + 'G' + str(args.gset_id) + '.txt'
     graph_file = open(fname)
