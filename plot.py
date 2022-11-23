@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 idx = []
 fitness = []
-with open('1.txt', 'r') as f:
+with open('fitness.txt', 'r') as f:
     lines = f.readlines()
     
 for line in lines:

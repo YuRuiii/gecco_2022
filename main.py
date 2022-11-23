@@ -41,7 +41,6 @@ def main(args=get_args()):
                 for ele in popu.plist:
                     file2.write('%s '%(str(ele)))
                 file2.write('\n')
-                
             
 if __name__ == '__main__':
     main()
