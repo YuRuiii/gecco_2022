@@ -24,32 +24,28 @@ class Genotype:
         new_x = x[:rand_idx] + ('1' if x[rand_idx] == '0' else '0') + x[rand_idx+1:] 
         return new_x, self.eval.get_fitness(self.graph, new_x, self.n_edges)
     
-    def targeted_one_bit_mutate(self, x, off_total, off_num):
-        pass
-    
-    # def bit_wise_mutate(self, x, alpha):
-    #     new_x = list(x)
-    #     for i in range(0, len(x)-1):
-    #         if random.random() < alpha:
-    #             new_x[i] = 1 if x[i] == 0 else 0
-    #     new_x = np.array(new_x).astype(int)
-    #     return new_x
-    
+    def targeted_one_bit_mutate(self, x, off_num):
+        ret_pool = []
+        for i in range(len(x)):
+            fin = self.eval.fitness_increase(self.graph, x, i)
+            if fin > 0:
+                new_x = x[:i] + ('1' if x[i] == '0' else '0') + x[i+1:]
+                ret_pool.append((new_x, fin))
+        np.random.shuffle(ret_pool)
+        ret_pool.sort(key=lambda tup: tup[1], reverse=True)
+        print(self.eval.get_fitness(self.graph, ret_pool[0][0], self.n_edges))
+        print(self.eval.get_fitness(self.graph, ret_pool[-1][0], self.n_edges))
+        print([tup[1] for tup in ret_pool[:10]])
+        print([tup[1] for tup in ret_pool[-10:]])
+        ret = []
+        for new_x, _ in ret_pool[:off_num]:
+            ret.append((x, self.eval.get_fitness(self.graph, new_x, self.n_edges)))
+        print(self.eval.get_fitness(self.graph, x, self.n_edges), [tup[1] for tup in ret])
+        assert 0
+        return ret
     
     def one_point_xover(self, x1, x2):
         rand_idx = random.randint(0, len(x1)-2) # 0 <= rand_idx <= len(x1)-2
         new_x1 = x1[:rand_idx] + x2[rand_idx:]
         new_x2 = x2[:rand_idx] + x1[rand_idx:]
         return (new_x1, self.eval.get_fitness(self.graph, new_x1, self.n_edges)), (new_x2, self.eval.get_fitness(self.graph, new_x2, self.n_edges))
-    
-    
-    def mutate1(self, x, alpha=0.01, stage=1):
-        if stage == 1:
-            return self.one_bit_mutate(x)
-        else:
-            return self.targeted_mutate(x)
-    
-    
-    def recombine1(self, x1, x2, stage=2):
-        if stage == 1:
-            return self.one_point_xover(x1, x2)
