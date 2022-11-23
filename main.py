@@ -17,12 +17,12 @@ def get_args():
     parser.add_argument('--seed', type=int, default=2023)
     parser.add_argument('--gset-id', type=int, default=1)
     parser.add_argument('--sigma', type=float, help='hyper-parameter of mutation operator',default=.1)
-    parser.add_argument('--population_size', type=int, default=100)
+    parser.add_argument('--population_size', type=int, default=10)
     args = parser.parse_known_args()[0]
     return args
 
 
-def main(args=get_args()):
+def main1(args=get_args()):
     print(args)
     g = Graph()
     # get graph
@@ -31,7 +31,7 @@ def main(args=get_args()):
     popu = Population(graph, n_nodes, n_edges, args.population_size)
     print("graph, node num =", n_nodes, "edge num =", n_edges)
     print("start training...")
-    with open('fitness.txt', 'w') as file1, open('popu_info.txt', 'w') as file2:
+    with open('fitness_popu_10.txt', 'w') as file1, open('popu_info_10.txt', 'w') as file2:
         for i in range(1, args.T):
             _, tmp_fitness = popu.iterate()
             file1.write('%s %s\n'%(str(i), str(tmp_fitness)))
@@ -41,6 +41,13 @@ def main(args=get_args()):
                 for ele in popu.plist:
                     file2.write('%s '%(str(ele)))
                 file2.write('\n')
+            # print(i, popu.geno.yes_mutation, popu.geno.no_mutation, popu.geno.yes_mutation/(popu.geno.yes_mutation+popu.geno.no_mutation))
+            # print(i, popu.geno.yes_recombination, popu.geno.no_recombination, popu.geno.yes_recombination/(popu.geno.yes_recombination+popu.geno.no_recombination))
+            # assert i <= 100
+            
+def main2():
+    pass
             
 if __name__ == '__main__':
-    main()
+    main1()
+    main2()

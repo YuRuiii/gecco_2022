@@ -9,6 +9,10 @@ class Genotype:
         self.eval = Evaluation()
         self.graph = graph
         self.n_edges = n_edges
+        self.yes_mutation = 0
+        self.no_mutation = 0
+        self.yes_recombination = 0
+        self.no_recombination = 0
         
         
     def initialize(self, node_num):
@@ -19,6 +23,14 @@ class Genotype:
     def one_bit_mutate(self, x):
         rand_idx = random.randint(0, len(x)-1) # 0 <= rand_idx <= len(x1)-1
         new_x = x[:rand_idx] + ('1' if x[rand_idx] == '0' else '0') + x[rand_idx+1:]
+        # print(self.eval.get_fitness(self.graph, new_x, self.n_edges))
+        # print(self.eval.get_fitness(self.graph, x, self.n_edges))
+        if self.eval.get_fitness(self.graph, new_x, self.n_edges) > self.eval.get_fitness(self.graph, x, self.n_edges):
+            self.yes_mutation += 1
+            # print("yes from mutation")
+        else:
+            self.no_mutation += 1
+            # print("no from mutation") 
         return new_x, self.eval.get_fitness(self.graph, new_x, self.n_edges)
     
     
@@ -35,6 +47,23 @@ class Genotype:
         rand_idx = random.randint(0, len(x1)-2) # 0 <= rand_idx <= len(x1)-2
         new_x1 = x1[:rand_idx] + x2[rand_idx:]
         new_x2 = x2[:rand_idx] + x1[rand_idx:]
+        # print(self.eval.get_fitness(self.graph, new_x1, self.n_edges))
+        # print(self.eval.get_fitness(self.graph, new_x2, self.n_edges))
+        # print(self.eval.get_fitness(self.graph, x1, self.n_edges))
+        # print(self.eval.get_fitness(self.graph, x2, self.n_edges))
+        
+        if self.eval.get_fitness(self.graph, new_x1, self.n_edges) > max(self.eval.get_fitness(self.graph, x1, self.n_edges), self.eval.get_fitness(self.graph, x2, self.n_edges)):
+            self.yes_recombination += 1
+            # print("yes from recombination")
+        else:
+            self.no_recombination += 1
+            # print("no from recombination") 
+        if self.eval.get_fitness(self.graph, new_x2, self.n_edges) > max(self.eval.get_fitness(self.graph, x1, self.n_edges), self.eval.get_fitness(self.graph, x2, self.n_edges)):
+            self.yes_recombination += 1
+            # print("yes from recombination")
+        else:
+            self.no_recombination += 1
+            # print("no from recombination") 
         return (new_x1, self.eval.get_fitness(self.graph, new_x1, self.n_edges)), (new_x2, self.eval.get_fitness(self.graph, new_x2, self.n_edges))
     
     

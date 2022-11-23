@@ -71,7 +71,7 @@ class Population:
         
         # recombination
         for i in range(len(mating_pool) // 2):
-            child1, child2 = self.geno.recombine(mating_pool[2*i], mating_pool[2*i+1])
+            child1, child2 = self.geno.recombine(mating_pool[2*i][0], mating_pool[2*i+1][0])
             offspring.append(child1)
             offspring.append(child2)
 
