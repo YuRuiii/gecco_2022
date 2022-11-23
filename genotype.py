@@ -33,16 +33,8 @@ class Genotype:
                 ret_pool.append((new_x, fin))
         np.random.shuffle(ret_pool)
         ret_pool.sort(key=lambda tup: tup[1], reverse=True)
-        print(self.eval.get_fitness(self.graph, ret_pool[0][0], self.n_edges))
-        print(self.eval.get_fitness(self.graph, ret_pool[-1][0], self.n_edges))
-        print([tup[1] for tup in ret_pool[:10]])
-        print([tup[1] for tup in ret_pool[-10:]])
-        ret = []
-        for new_x, _ in ret_pool[:off_num]:
-            ret.append((x, self.eval.get_fitness(self.graph, new_x, self.n_edges)))
-        print(self.eval.get_fitness(self.graph, x, self.n_edges), [tup[1] for tup in ret])
-        assert 0
-        return ret
+        return ret_pool[0], self.eval.get_fitness(self.graph, ret_pool[0], self.n_edges)
+    
     
     def one_point_xover(self, x1, x2):
         rand_idx = random.randint(0, len(x1)-2) # 0 <= rand_idx <= len(x1)-2
