@@ -17,6 +17,8 @@ class Evaluation:
     def fitness_increase(self, graph, x, idx):
         edges = graph.edges(idx)
         nodes = [tup[1] for tup in edges]
+        # print(nodes, idx, len(x), x)
+        # assert 0
         same_cnt, diff_cnt = 0, 0
         for n in nodes:
             if x[n] == x[idx]:

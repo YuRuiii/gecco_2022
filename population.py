@@ -66,13 +66,16 @@ class Population:
             
     def get_parent(self):
         prob_plist = self.get_prob_list()
+        # print(prob_plist)
+        # assert 0
         mating_pool = self.get_mating_pool(prob_plist)
         return mating_pool
     
     
-    def get_offspring(self, mating_pool=[]):
+    def get_offspring(self, iter_time):
         offspring = []
         if self.stage == 1:
+            mating_pool = self.get_parent()
             np.random.shuffle(mating_pool)
             # recombination
             for i in range(len(mating_pool) // 2):
@@ -85,39 +88,57 @@ class Population:
                 offspring.append(off_info)
             return offspring
         elif self.stage == 2:
-            for parent, _ in self.plist:
-                off_infos = self.geno.targeted_one_bit_mutate(parent, self.off_num)
-                # print(_, off_infos[0][1])
-                # assert(0)
-                offspring += off_infos
-                # off_info = self.geno.one_bit_mutate(parent)
-                # offspring.append(off_info)
-            print([i for _, i in offspring])
+            mating_pool = self.get_parent()
+            np.random.shuffle(mating_pool)
+            # recombination
+            for i in range(len(mating_pool) // 2):
+                child1, child2 = self.geno.one_point_xover(mating_pool[2*i][0], mating_pool[2*i+1][0])
+                offspring.append(child1)
+                offspring.append(child2)
+                
+            for parent, pf in self.plist:
+                off_info1 = self.geno.bit_wise_mutate(parent, 0.1)
+                offspring.append(off_info1)
+                off_info2 = self.geno.targeted_one_bit_mutate(parent)
+                if off_info2[1] < pf:
+                    offspring.append((parent, pf))
+                else:
+                    offspring.append(off_info2)
+            # print([i for _, i in offspring])
             return offspring
         else:
             assert 0
     
         
-    def iterate(self, iter_time):
+    def iterate(self, iter_time=0):
         if self.stage == 1:
-            parent = self.get_parent()
-            offspring = self.get_offspring(parent)
-            self.survivor_selection(offspring)
-        elif self.stage == 2:
             offspring = self.get_offspring()
             self.survivor_selection(offspring)
+        elif self.stage == 2:
+            offspring = self.get_offspring(iter_time)
+            self.survivor_selection(offspring, iter_time)
         else:
             assert 0
             
         return self.plist[0][0], self.plist[0][1]
         
-    def survivor_selection(self, offspring):
+    def survivor_selection(self, offspring, iter_time=0):
         if self.stage == 1:
             new_plist = list(set(self.plist + offspring)) # remove duplicates
             new_plist.sort(key=lambda tup: tup[1], reverse=True)
             self.plist = new_plist[:self.max_size]
         elif self.stage == 2:
-            self.plist = offspring
+            offspring.sort(key=lambda tup: tup[1], reverse=True)
+            self.plist = offspring[:self.max_size]
+            # if iter_time % 2 == 0:
+            #     new_plist = offspring # remove duplicates
+            #     new_plist.sort(key=lambda tup: tup[1], reverse=True)
+            #     self.plist = new_plist[:self.max_size]
+            #     # print(len(new_plist))
+            # else:
+            #     self.plist = offspring
+            #     self.plist.sort(key=lambda tup: tup[1], reverse=True)
+            #     # print(len(self.plist))
         else:
             assert 0
         

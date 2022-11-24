@@ -1,4 +1,9 @@
-from population import Population
+from multiprocessing import Pool, cpu_count
+import time
 
-p = Population(3)
-p.update()
+def random_calculation(x):
+    while True:
+        x * x
+
+p = Pool(processes=cpu_count())
+p.map(random_calculation, range(cpu_count()))

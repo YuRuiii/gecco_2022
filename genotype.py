@@ -24,17 +24,23 @@ class Genotype:
         new_x = x[:rand_idx] + ('1' if x[rand_idx] == '0' else '0') + x[rand_idx+1:] 
         return new_x, self.eval.get_fitness(self.graph, new_x, self.n_edges)
     
-    def targeted_one_bit_mutate(self, x, off_num):
+    def targeted_one_bit_mutate(self, x):
         ret_pool = []
         for i in range(len(x)):
             fin = self.eval.fitness_increase(self.graph, x, i)
-            if fin > 0:
-                new_x = x[:i] + ('1' if x[i] == '0' else '0') + x[i+1:]
-                ret_pool.append((new_x, fin))
+            # if fin > 0:
+            new_x = x[:i] + ('1' if x[i] == '0' else '0') + x[i+1:]
+            ret_pool.append((new_x, fin))
         np.random.shuffle(ret_pool)
         ret_pool.sort(key=lambda tup: tup[1], reverse=True)
-        return ret_pool[0], self.eval.get_fitness(self.graph, ret_pool[0], self.n_edges)
+        # print(ret_pool[0][0], self.eval.get_fitness(self.graph, ret_pool[0][0], self.n_edges))
+        return ret_pool[0][0], self.eval.get_fitness(self.graph, ret_pool[0][0], self.n_edges)
     
+    def bit_wise_mutate(self, x, alpha=0.01):
+        for i in range(len(x)):
+            if random.random() < alpha:
+                x = x[:i] + ('1' if x[i] == '0' else '0') + x[i+1:]
+        return x, self.eval.get_fitness(self.graph, x, self.n_edges)
     
     def one_point_xover(self, x1, x2):
         rand_idx = random.randint(0, len(x1)-2) # 0 <= rand_idx <= len(x1)-2
