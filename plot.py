@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 
 idx = []
 fitness = []
-with open('fitness_popu_10.txt', 'r') as f:
+with open('data/regular_1_1000.txt', 'r') as f:
     lines = f.readlines()
+
+lines = lines[:1000]
     
 for line in lines:
     line.split(' ')

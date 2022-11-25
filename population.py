@@ -72,7 +72,7 @@ class Population:
         return mating_pool
     
     
-    def get_offspring(self, iter_time):
+    def get_offspring(self, iter_time=0):
         offspring = []
         if self.stage == 1:
             mating_pool = self.get_parent()
@@ -130,15 +130,6 @@ class Population:
         elif self.stage == 2:
             offspring.sort(key=lambda tup: tup[1], reverse=True)
             self.plist = offspring[:self.max_size]
-            # if iter_time % 2 == 0:
-            #     new_plist = offspring # remove duplicates
-            #     new_plist.sort(key=lambda tup: tup[1], reverse=True)
-            #     self.plist = new_plist[:self.max_size]
-            #     # print(len(new_plist))
-            # else:
-            #     self.plist = offspring
-            #     self.plist.sort(key=lambda tup: tup[1], reverse=True)
-            #     # print(len(self.plist))
         else:
             assert 0
         

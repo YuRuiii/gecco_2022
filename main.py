@@ -11,14 +11,14 @@ from island import Island
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--graph-type', type=str, help='graph type', default='regular')
-    parser.add_argument('--n-nodes', type=int, help='the number of nodes', default=100)
+    parser.add_argument('--n-nodes', type=int, help='the number of nodes', default=1000)
     parser.add_argument('--n-d', type=int, help='the number of degrees for each node', default=10)
     parser.add_argument('--T', type=int, help='the number of fitness evaluations', default=10000)
     parser.add_argument('--seed-g', type=int, help='the seed of generating regular graph', default=1)
     parser.add_argument('--seed', type=int, default=2023)
     parser.add_argument('--gset-id', type=int, default=1)
     parser.add_argument('--sigma', type=float, help='hyper-parameter of mutation operator',default=.1)
-    parser.add_argument('--population_size', type=int, default=10)
+    parser.add_argument('--population_size', type=int, default=100)
     parser.add_argument('--file', type=str, default='test.txt')
     parser.add_argument('--stage', type=int, default=2)
     
@@ -48,12 +48,12 @@ def main(args=get_args()):
                         file2.write('%s '%(str(ele)))
                     file2.write('\n')
     else:
-        ex_ratio, ex_num = 5, 2
-        island = Island(graph, n_nodes, n_edges, args.population_size, args.stage, ex_ratio, ex_num, 4)
-        with open('fitness/'+args.file, 'w') as file:
-            for i in range(0, args.T // ex_ratio):
-                flist = island.iterate(i)
-                for idx, line in enumerate(flist):
+        ex_ratio, ex_num = 50, 5
+        island = Island(graph, n_nodes, n_edges, args.population_size, args.stage, ex_ratio, ex_num, 12)
+        for i in range(0, args.T // ex_ratio + (0 if args.T % ex_ratio == 0 else 1)):
+            flist = island.iterate(i)
+            for idx, line in enumerate(flist):
+                with open('fitness/'+args.file, 'a') as file:
                     file.write('%s %s\n'%(str(idx+i*ex_ratio), str(line)))
     
 if __name__ == '__main__':

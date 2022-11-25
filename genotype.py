@@ -24,9 +24,11 @@ class Genotype:
         new_x = x[:rand_idx] + ('1' if x[rand_idx] == '0' else '0') + x[rand_idx+1:] 
         return new_x, self.eval.get_fitness(self.graph, new_x, self.n_edges)
     
-    def targeted_one_bit_mutate(self, x):
+    def targeted_one_bit_mutate(self, x, choose_num=10):
         ret_pool = []
-        for i in range(len(x)):
+        
+        for _ in range(choose_num):
+            i = random.randint(0, len(x)-1)
             fin = self.eval.fitness_increase(self.graph, x, i)
             # if fin > 0:
             new_x = x[:i] + ('1' if x[i] == '0' else '0') + x[i+1:]
