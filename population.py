@@ -78,10 +78,10 @@ class Population:
             mating_pool = self.get_parent()
             np.random.shuffle(mating_pool)
             # recombination
-            for i in range(len(mating_pool) // 2):
-                child1, child2 = self.geno.one_point_xover(mating_pool[2*i][0], mating_pool[2*i+1][0])
-                offspring.append(child1)
-                offspring.append(child2)
+            # for i in range(len(mating_pool) // 2):
+            #     child1, child2 = self.geno.one_point_xover(mating_pool[2*i][0], mating_pool[2*i+1][0])
+            #     offspring.append(child1)
+            #     offspring.append(child2)
             # mutation
             for parent, _ in mating_pool:
                 off_info = self.geno.one_bit_mutate(parent)
