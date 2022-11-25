@@ -10,7 +10,7 @@ from island import Island
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--graph-type', type=str, help='graph type', default='gset')
+    parser.add_argument('--graph-type', type=str, help='graph type', default='regular')
     parser.add_argument('--n-nodes', type=int, help='the number of nodes', default=1000)
     parser.add_argument('--n-d', type=int, help='the number of degrees for each node', default=10)
     parser.add_argument('--T', type=int, help='the number of fitness evaluations', default=1000)
@@ -18,7 +18,7 @@ def get_args():
     parser.add_argument('--seed', type=int, default=2023)
     parser.add_argument('--gset-id', type=int, default=1)
     parser.add_argument('--sigma', type=float, help='hyper-parameter of mutation operator',default=.1)
-    parser.add_argument('--population_size', type=int, default=10)
+    parser.add_argument('--population_size', type=int, default=100)
     parser.add_argument('--file', type=str, default='test.txt')
     parser.add_argument('--stage', type=int, default=1)
     
@@ -55,6 +55,7 @@ def main(args=get_args()):
             for idx, line in enumerate(flist):
                 with open('fitness/'+args.file, 'a') as file:
                     file.write('%s %s\n'%(str(idx+i*ex_ratio), str(line)))
+    
     
 if __name__ == '__main__':
     main()

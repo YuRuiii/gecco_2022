@@ -7,18 +7,15 @@ class Evaluation:
         node = np.array(list(c))
         g1 = np.where(node == '1')[0]
         g2 = np.where(node == '0')[0]
-        # print(c, node, g1, g2, nx.cut_size(graph, g1, g2), n_edges)
         return nx.cut_size(graph, g1, g2) / n_edges
     
-    # 左多了idx,右少了idx
-    # cut=node1在左边，node2在右边的边数
-    # 改变之后，左边多了node1，cut_size - 原来和node1相连的左边结点 + 原来和node1相连的右边结点
     
     def fitness_increase(self, graph, x, idx):
+        # 左多了idx,右少了idx
+        # cut=node1在左边，node2在右边的边数
+        # 改变之后，左边多了node1，cut_size - 原来和node1相连的左边结点 + 原来和node1相连的右边结点
         edges = graph.edges(idx)
         nodes = [tup[1] for tup in edges]
-        # print(nodes, idx, len(x), x)
-        # assert 0
         same_cnt, diff_cnt = 0, 0
         for n in nodes:
             if x[n] == x[idx]:

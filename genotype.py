@@ -35,7 +35,6 @@ class Genotype:
             ret_pool.append((new_x, fin))
         np.random.shuffle(ret_pool)
         ret_pool.sort(key=lambda tup: tup[1], reverse=True)
-        # print(ret_pool[0][0], self.eval.get_fitness(self.graph, ret_pool[0][0], self.n_edges))
         return ret_pool[0][0], self.eval.get_fitness(self.graph, ret_pool[0][0], self.n_edges)
     
     def bit_wise_mutate(self, x, alpha=0.01):

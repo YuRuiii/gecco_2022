@@ -60,6 +60,7 @@ class Population:
     def get_prob_list(self):
         return self.FPS()
     
+    
     def get_mating_pool(self, prob_plist):
         return self.stochastic_universal_sampling(prob_plist)
             
@@ -78,10 +79,10 @@ class Population:
             mating_pool = self.get_parent()
             np.random.shuffle(mating_pool)
             # recombination
-            # for i in range(len(mating_pool) // 2):
-            #     child1, child2 = self.geno.one_point_xover(mating_pool[2*i][0], mating_pool[2*i+1][0])
-            #     offspring.append(child1)
-            #     offspring.append(child2)
+            for i in range(len(mating_pool) // 2):
+                child1, child2 = self.geno.one_point_xover(mating_pool[2*i][0], mating_pool[2*i+1][0])
+                offspring.append(child1)
+                offspring.append(child2)
             # mutation
             for parent, _ in mating_pool:
                 off_info = self.geno.one_bit_mutate(parent)
@@ -94,17 +95,17 @@ class Population:
             for i in range(len(mating_pool) // 2):
                 child1, child2 = self.geno.one_point_xover(mating_pool[2*i][0], mating_pool[2*i+1][0])
                 offspring.append(child1)
-                offspring.append(child2)
-                
+                offspring.append(child2)          
             for parent, pf in self.plist:
+                # bit wise mutation
                 off_info1 = self.geno.bit_wise_mutate(parent, 0.1)
                 offspring.append(off_info1)
+                # targeted one bit mutate
                 off_info2 = self.geno.targeted_one_bit_mutate(parent)
                 if off_info2[1] < pf:
                     offspring.append((parent, pf))
                 else:
                     offspring.append(off_info2)
-            # print([i for _, i in offspring])
             return offspring
         else:
             assert 0

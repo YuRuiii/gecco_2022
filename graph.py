@@ -6,7 +6,6 @@ class Graph:
         return graph, len(graph.nodes), len(graph.edges)
     
     def generate_gset_graph(self, gset_id):
-        # 这里提供了比较流行的图集合: Gset, 用于进行分割
         dir = './Gset/'
         fname = dir + 'G' + str(gset_id) + '.txt'
         graph_file = open(fname)
